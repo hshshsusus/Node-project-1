@@ -1,7 +1,8 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const { User } = require("../Database/schemaUser");
-const requestConnection = require("../Database/requestConnectionSchema")
+const requestConnection = require("../Database/requestConnectionSchema");
+const { set } = require("mongoose");
 const userRouter = express.Router();
 
 userRouter.get("/user/requests/received", async (req, res) => {
@@ -28,12 +29,8 @@ userRouter.get("/user/requests/received", async (req, res) => {
                 message: "requests not found"
             });
         }
-        
-        // console.log(reqList)
-        res.json({
-            message: "requests found",
-            reqs
-        })
+        // console.log("erqs",reqs)
+        res.send(reqs)
     } catch (error) {
         res.status(400).send("ERROR :" + error.message);
     }
@@ -71,6 +68,45 @@ userRouter.get("/user/connections", async (req, res) => {
         res.send(allConnections)
     } catch (error) {
         res.status(400).send("ERROR :" + error.message)
+    }
+})
+
+userRouter.get("/feed", async (req, res) =>{
+    try {
+        const page = req.query.page || 1;
+        const limit = req.query.limit || 10;
+        const skip = (page - 1)*limit;
+
+        const { token } = req.cookies
+        const isTokenValid = await jwt.verify(token, "PRASAD@$123");
+        if (!isTokenValid) {
+            throw new Error("Token got expire!!..");
+        }
+
+        const { _id } = isTokenValid;
+        const loggedinUser = await User.findOne({ _id: _id });
+
+        if (!loggedinUser) {
+            throw new Error("User not found!!..");
+        }
+
+        const connectionRequests = await requestConnection.find({
+            $or:[{fromUserId:loggedinUser._id},{toUserId:loggedinUser._id}]
+        }).select("fromUserId toUserId")
+
+        const hideAllConnectionsUsers = new Set();
+
+        connectionRequests.forEach(ele => {
+            hideAllConnectionsUsers.add(ele.fromUserId.toString())
+            hideAllConnectionsUsers.add(ele.toUserId.toString())
+        });
+        
+        const hideUsersFromFeed = await User.find({
+            $and:[{_id:{$nin:Array.from(hideAllConnectionsUsers)}},{_id:{$ne:loggedinUser._id}}]
+        }).select("fristName lastName age gender skills about photoURL").skip(skip).limit(limit)
+        res.send(hideUsersFromFeed)
+    } catch (error) {
+        res.status(400).send("ERROR :"+error.message)
     }
 })
 

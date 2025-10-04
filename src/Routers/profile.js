@@ -17,7 +17,7 @@ profileRouter.get("/profile/view", async (req, res) => {
             throw new Error("Token expired!!!")
         }
         const { _id } = isTokenValid;
-        const loggedUser = await User.findOne({ _id: _id });
+        const loggedUser = await User.findOne({ _id: _id }).select("fristName lastName age gender skills about photoURL");
         res.send(loggedUser)
     } catch (error) {
         res.status(400).send("ERROR : " + error.message);
@@ -38,6 +38,7 @@ profileRouter.patch("/profile/edit", async (req, res) => {
                 throw new Error("user doesn't exist!!!");
             }
             const allowedFields = ["fristName", "lastName", "age", "skills", "about", "photoURL"];
+            console.log(req.body)
             Object.keys(req.body).every(field => allowedFields.includes(field));
             Object.keys(req.body).forEach((key) => (loggedinUser[key] = req.body[key]));
 

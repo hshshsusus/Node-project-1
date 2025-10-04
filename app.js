@@ -5,11 +5,16 @@ const profileRouter = require("./src/Routers/profile");
 const requetRouter = require("./src/Routers/requests");
 const userRouter = require("./src/Routers/user");
 const cookieParser = require("cookie-parser");
+const cors = require("cors");
 
 const app = express();
 
 const port = 7777;
 
+app.use(cors({
+    origin:"http://localhost:5173",
+    credentials:true
+}))
 app.use(express.json());
 app.use(cookieParser())
 
