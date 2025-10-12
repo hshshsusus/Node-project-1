@@ -22,7 +22,12 @@ authRouter.post("/signup", async (req, res) => {
             photoURL,
             gender,
         })
-        await user.save();
+        const singedUpUser = await user.save();
+        if(!singedUpUser){
+            throw new Error("User not signed up!!");
+        }
+        const token = await jwt.sign({_id:singedUpUser._id}, "PRASAD@$123");
+        res.cookie("token", token)
         res.send(user)
     } catch (error) {
         res.status(400).send("ERROR : " + error.message)

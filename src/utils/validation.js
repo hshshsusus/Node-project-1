@@ -8,8 +8,6 @@ const userDataValidation = (req) =>{
         throw new Error("email is not valid!!!");
     }else if(!validator.isStrongPassword(password)){
         throw new Error("password is not strong!!!")
-    }else if(skills.length >= 5){
-        throw new Error("you can less then 5 skills only")
     }
 }
 

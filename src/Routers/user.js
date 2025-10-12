@@ -23,7 +23,7 @@ userRouter.get("/user/requests/received", async (req, res) => {
         const reqs = await requestConnection.find({
             toUserId: loggedinUser._id,
             status: "interested"
-        }).populate("fromUserId", "fristName lastName age skills about gender")
+        }).populate("fromUserId", "fristName lastName age skills about gender photoURL")
         if (!reqs) {
             return res.status(400).json({
                 message: "requests not found"
@@ -56,8 +56,8 @@ userRouter.get("/user/connections", async (req, res) => {
                 { fromUserId: loggedinUser._id, status: "accepted" },
                 { toUserId: loggedinUser._id, status: "accepted" }
             ],
-        }).populate("fromUserId", "fristName lastName age skills about gender")
-            .populate("toUserId", "fristName lastName age skills about gender")
+        }).populate("fromUserId", "fristName lastName age skills about gender photoURL")
+            .populate("toUserId", "fristName lastName age skills about gender photoURL")
 
         const allConnections = connections.map((user) =>{
             if(user.fromUserId._id.toString() === loggedinUser._id.toString()){
