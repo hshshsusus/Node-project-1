@@ -6,6 +6,8 @@ const requetRouter = require("./src/Routers/requests");
 const userRouter = require("./src/Routers/user");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
+const http = require("http");
+const initializeSocket = require("./src/utils/socket");
 
 const app = express();
 
@@ -23,10 +25,13 @@ app.use("/",profileRouter);
 app.use("/", requetRouter);
 app.use("/", userRouter);
 
+const server = http.createServer(app);
+initializeSocket(server);
+
 connectDB()
     .then(() => {
         console.log("Database connected successfully ...")
-        app.listen(port, () => {
+        server.listen(port, () => {
             console.log(`server running at ${port}...`)
         })
     })
