@@ -4,6 +4,7 @@ const authRouter = require("./src/Routers/auth");
 const profileRouter = require("./src/Routers/profile");
 const requetRouter = require("./src/Routers/requests");
 const userRouter = require("./src/Routers/user");
+const otpRouter = require('./src/Routers/otp');
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const http = require("http");
@@ -24,6 +25,7 @@ app.use("/", authRouter);
 app.use("/",profileRouter);
 app.use("/", requetRouter);
 app.use("/", userRouter);
+app.use("/",otpRouter)
 
 const server = http.createServer(app);
 initializeSocket(server);

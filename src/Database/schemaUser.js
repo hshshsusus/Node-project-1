@@ -48,6 +48,12 @@ const userSchema = new mongoose.Schema({
                 throw new Error("URL is not valid!!!")
             }
         }
+    },
+    otp:{
+        type:Number
+    },
+    otpExpiry:{
+        type:Number
     }
 },
 {

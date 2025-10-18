@@ -4,6 +4,9 @@ const userDataValidation = require("../utils/validation");
 const bcrypt = require("bcrypt");
 const express = require("express");
 const jwt = require("jsonwebtoken");
+const dotenv = require("dotenv");
+
+dotenv.config();
 
 const authRouter = express.Router();
 
@@ -26,7 +29,7 @@ authRouter.post("/signup", async (req, res) => {
         if(!singedUpUser){
             throw new Error("User not signed up!!");
         }
-        const token = await jwt.sign({_id:singedUpUser._id}, "PRASAD@$123");
+        const token = await jwt.sign({_id:singedUpUser._id}, process.env.JWT_SECRET_KEY);
         res.cookie("token", token)
         res.send(user)
     } catch (error) {
@@ -43,7 +46,7 @@ authRouter.post("/login", async (req, res) => {
         }
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if(isPasswordValid){
-            const token = await jwt.sign({_id:user._id}, "PRASAD@$123");
+            const token = await jwt.sign({_id:user._id}, process.env.JWT_SECRET_KEY);
             res.cookie("token", token)
             res.send(user);
         }else{
